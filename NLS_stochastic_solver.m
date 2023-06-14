@@ -8,8 +8,17 @@ classdef NLS_stochastic_solver
         no_timesteps = 1000000
         delta = 0.0001
         result = [];
+        random = false
     end
     methods
+        function obj = NLS_stochastic_solver(h, no_timesteps, delta, varargin)
+            obj.h = h;
+            obj.no_timesteps = no_timesteps;
+            obj.delta = delta;
+            if length(varargin) == 2
+                obj.random = [varargin{1} , varargin{2}]
+            end
+        end
         function y = solve2(obj)
             y = zeros(1,1,obj.no_timesteps);
         end
@@ -32,10 +41,13 @@ classdef NLS_stochastic_solver
             f_2_array = zeros(1,1,no_timesteps);
             f_3_array = zeros(1,1,no_timesteps);
 
-
-            %rng(1796)
+            if obj.random
+                rng(obj.random(1))
+            end 
             epsilon = normrnd(0, 1, [1, no_timesteps_to_sim_Bloop]);
-            %rng(2890)
+            if obj.random
+                rng(obj.random(2))
+            end 
             eta = normrnd(0, 1, [1, no_timesteps_to_sim_Bloop]);
 
             %create the sequence of random matrices Sn
