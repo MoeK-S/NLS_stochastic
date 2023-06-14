@@ -5,10 +5,10 @@
 classdef NLS_stochastic_solver
     properties
         h = 0.00001;
-        no_timesteps = 1000000
-        delta = 0.0001
+        no_timesteps = 1000000;
+        delta = 0.0001;
         result = [];
-        random = false
+        random = false;
     end
     methods
         function obj = NLS_stochastic_solver(h, no_timesteps, delta, varargin)
@@ -16,7 +16,7 @@ classdef NLS_stochastic_solver
             obj.no_timesteps = no_timesteps;
             obj.delta = delta;
             if length(varargin) == 2
-                obj.random = [varargin{1} , varargin{2}]
+                obj.random = [varargin{1} , varargin{2}];
             end
         end
         function y = solve2(obj)
@@ -114,7 +114,6 @@ classdef NLS_stochastic_solver
 
 
             %now use rodriguez formula to approx exp
-
             expOmega = zeros(3,3,no_timesteps);
 
             theta = sqrt(Omega(1,2,:).^2 + Omega(3,3,:).^2 + Omega(2,3,:).^2);

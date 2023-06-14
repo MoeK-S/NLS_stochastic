@@ -13,4 +13,3 @@ solution.result = solve(solution);
 
 %plot the sample path.
 plotting(solution)
-hold offz
