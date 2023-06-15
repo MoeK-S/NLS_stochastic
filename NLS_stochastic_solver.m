@@ -53,8 +53,6 @@ classdef NLS_stochastic_solver
             %create the sequence of random matrices Sn
             sequence = zeros(3, 3, no_timesteps);
 
-            %create Sn
-
             %dX = V_1 X kappa dt + V_2 X dtau (can be extended)
 
             %generate P and Q, both Brownian loop.
@@ -62,16 +60,12 @@ classdef NLS_stochastic_solver
             W_2 = sqrt_h*cumsum(eta);
             time = h*cumsum(ones(1,no_timesteps));
 
-
-            %TODO make this work, need to choose different
             for i = 1:ceil(no_timesteps/no_timesteps_in_a_period);
                 lower = (i-1)*no_timesteps_in_a_period + 1;
-                upper = min((i*no_timesteps_in_a_period), no_timesteps)
+                upper = min((i*no_timesteps_in_a_period), no_timesteps);
                 P(1,((i-1)*no_timesteps_in_a_period + 1):min((i*no_timesteps_in_a_period), no_timesteps)) = W_1(1,((i-1)*no_timesteps_in_a_period + 1):min((i*no_timesteps_in_a_period), no_timesteps)) + (-1)* W_1(no_timesteps_in_a_period*i)*time(1, lower:upper)/My_approximation_for_2pi;
                 Q(1, lower:upper) = W_2(1, lower:upper) + (-1)* W_2(no_timesteps_in_a_period)*time(1, lower:upper)/My_approximation_for_2pi;
             end
-            %kappa (we dont need the epsilon)
-            %kappa = (P.^2 + Q.^2 + delta^2).^(0.5);clear a
             kappa = (P.^2 + Q.^2).^(0.5);
 
             % tau = f_1 dP + f_2 dQ + f_3 dt
@@ -87,29 +81,18 @@ classdef NLS_stochastic_solver
             %V_2
             V_2 = [ 0 0 0; 0 0 1; 0 -1 0];
 
-
-
-
             epsilon_array(1,1,:) = epsilon(1, 1:no_timesteps);
             eta_array(1,1,:) = eta(1, 1:no_timesteps);
 
 
             kappa_array(1,1,:) = kappa;
-
-            %f_1 = permute(f_1, [1 3 2]);
-            %f_2 = permute(f_2, [1 3 2]);
-            %f_3 = permute(f_3, [1 3 2]);
-
-
             f_1_array(1,1,:) = f_1;
             f_2_array(1,1,:) = f_2;
             f_3_array(1,1,:) = f_3;
 
             identity_array = zeros(3,3,no_timesteps) + [1 0 0; 0 1 0; 0 0 1];
 
-
-
-            %Omega, can see details in Overleaf doc.
+            %Omega, can see details in https://arxiv.org/abs/2205.12868 Eq 7.1.
             Omega = (V_1.*kappa_array + V_2.*f_3_array)*h + V_2*sqrt_h.*(epsilon_array.*f_1_array + eta_array.*f_2_array) ;
 
 
@@ -120,8 +103,6 @@ classdef NLS_stochastic_solver
             expOmega = identity_array + sinc( theta / pi ) .* Omega + 0.5* sinc(theta / (2*pi)).^2 .* pagemtimes(Omega , Omega);
 
 
-
-
             %intitialise X_0 as the identity matrix
             X = identity_array;
 
@@ -130,8 +111,6 @@ classdef NLS_stochastic_solver
             for n = 2:no_timesteps
                 X(:, :, n) = expOmega(:,:, n)*X(:,:, n-1);
             end
-
-
 
             %with initial condition y_0 = [0 0 1]^T create a solution path for each
             % X.
@@ -147,7 +126,7 @@ classdef NLS_stochastic_solver
             zcoord = permute(y(3,1,:), [3 2 1]);
 
 
-            a_plot = scatter3(xcoord, ycoord, zcoord,10, '*')
+            a_plot = scatter3(xcoord, ycoord, zcoord,10, '*');
             xlabel("x")
             ylabel("y")
             zlabel("z")
